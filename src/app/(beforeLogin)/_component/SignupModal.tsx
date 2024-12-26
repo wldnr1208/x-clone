@@ -1,102 +1,183 @@
 "use client";
 
-import style from './signup.module.css';
-import {useRouter} from "next/navigation";
-import {ChangeEventHandler, FormEventHandler, useState} from "react";
+import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import style from "./signup.module.css";
+import BackButton from "./BackButton";
+
+interface SignupState {
+  username: string;
+  email: string;
+  password: string;
+  bio: string;
+  birthDate: string;
+}
 
 export default function SignupModal() {
-  const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
-  const [nickname, setNickname] = useState('');
-  const [image, setImage] = useState('');
-  const [imageFile, setImageFile] = useState<File>();
-
   const router = useRouter();
-  const onClickClose = () => {
-    router.back();
-    // TODO: 뒤로가기가 /home이 아니면 /home으로 보내기
-  }
+  const [formData, setFormData] = useState<SignupState>({
+    username: "",
+    email: "",
+    password: "",
+    bio: "",
+    birthDate: "",
+  });
+  const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const onChangeId: ChangeEventHandler<HTMLInputElement> = (e) => { setId(e.target.value) };
-
-  const onChangePassword: ChangeEventHandler<HTMLInputElement> = (e) => { setPassword(e.target.value) };
-  const onChangeNickname: ChangeEventHandler<HTMLInputElement> = (e) => { setNickname(e.target.value) };
-  const onChangeImageFile: ChangeEventHandler<HTMLInputElement> = (e) => {
-    e.target.files && setImageFile(e.target.files[0])
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const onSubmit: FormEventHandler = (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    fetch('http://localhost:9090/api/users', {
-      method: 'post',
-      body: JSON.stringify({
-        id,
-        nickname,
-        image,
-        password,
-      }),
-      credentials: 'include',
-    }).then((response: Response) => {
-      console.log(response.status);
-      if (response.status === 200) {
-        router.replace('/home');
+    setError("");
+    setIsLoading(true);
+
+    const formatBirthDate = (date: string) => {
+      if (date.length === 8) {
+        return `${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}`;
       }
-    }).catch((err) => {
-      console.error(err);
-    });
-  }
+      return date;
+    };
+
+    try {
+      const formattedData = {
+        ...formData,
+        birthDate: formatBirthDate(formData.birthDate),
+      };
+
+      console.log("Sending data:", formattedData);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/signup`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formattedData),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "서버 오류가 발생했습니다.");
+      }
+      // 성공 시 토큰을 sessionStorage에 저장
+      if (data.data.token) {
+        sessionStorage.setItem("token", data.data.token);
+      }
+      // 성공 시 홈으로 리다이렉트
+      console.log("회원가입 성공:", data);
+      router.replace("/home");
+    } catch (err) {
+      console.error("Error details:", err);
+      setError(
+        err instanceof Error ? err.message : "서버 오류가 발생했습니다."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <>
-      <div className={style.modalBackground}>
-        <div className={style.modal}>
-          <div className={style.modalHeader}>
-            <button className={style.closeButton} onClick={onClickClose}>
-              <svg width={24} viewBox="0 0 24 24" aria-hidden="true"
-                   className="r-18jsvk2 r-4qtqp9 r-yyyyoo r-z80fyv r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-19wmn03">
-                <g>
-                  <path
-                    d="M10.59 12L4.54 5.96l1.42-1.42L12 10.59l6.04-6.05 1.42 1.42L13.41 12l6.05 6.04-1.42 1.42L12 13.41l-6.04 6.05-1.42-1.42L10.59 12z"></path>
-                </g>
-              </svg>
-            </button>
-            <div>계정을 생성하세요.</div>
-          </div>
-          <form>
-            <div className={style.modalBody}>
-              <div className={style.inputDiv}>
-                <label className={style.inputLabel} htmlFor="id">아이디</label>
-                <input id="id" className={style.input} type="text" placeholder=""
-                       value={id}
-                       onChange={onChangeId}
-                />
-              </div>
-              <div className={style.inputDiv}>
-                <label className={style.inputLabel} htmlFor="name">닉네임</label>
-                <input id="name" className={style.input} type="text" placeholder=""
-                       value={nickname}
-                       onChange={onChangeNickname}
-                />
-              </div>
-              <div className={style.inputDiv}>
-                <label className={style.inputLabel} htmlFor="password">비밀번호</label>
-                <input id="password" className={style.input} type="password" placeholder=""
-                       value={password}
-                       onChange={onChangePassword}
-                />
-              </div>
-              <div className={style.inputDiv}>
-                <label className={style.inputLabel} htmlFor="image">프로필</label>
-                <input id="image" className={style.input} type="file" accept="image/*"
-                       onChange={onChangeImageFile}
-                />
-              </div>
-            </div>
-            <div className={style.modalFooter}>
-              <button className={style.actionButton} disabled>가입하기</button>
-            </div>
-          </form>
+    <div className={style.modalBackground}>
+      <div className={style.modal}>
+        <div className={style.modalHeader}>
+          <BackButton />
+          <div>계정을 생성하세요.</div>
         </div>
+        <form onSubmit={handleSubmit}>
+          <div className={style.modalBody}>
+            <div className={style.inputDiv}>
+              <label className={style.inputLabel} htmlFor="username">
+                사용자 이름
+              </label>
+              <input
+                id="username"
+                name="username"
+                className={style.input}
+                type="text"
+                required
+                value={formData.username}
+                onChange={handleChange}
+              />
+            </div>
+            <div className={style.inputDiv}>
+              <label className={style.inputLabel} htmlFor="email">
+                이메일
+              </label>
+              <input
+                id="email"
+                name="email"
+                className={style.input}
+                type="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+            <div className={style.inputDiv}>
+              <label className={style.inputLabel} htmlFor="password">
+                비밀번호
+              </label>
+              <input
+                id="password"
+                name="password"
+                className={style.input}
+                type="password"
+                required
+                value={formData.password}
+                onChange={handleChange}
+              />
+            </div>
+            <div className={style.inputDiv}>
+              <label className={style.inputLabel} htmlFor="bio">
+                자기소개
+              </label>
+              <textarea
+                id="bio"
+                name="bio"
+                className={style.input}
+                value={formData.bio}
+                onChange={handleChange}
+              />
+            </div>
+            <div className={style.inputDiv}>
+              <label className={style.inputLabel} htmlFor="birthDate">
+                생년월일
+              </label>
+              <input
+                id="birthDate"
+                name="birthDate"
+                className={style.input}
+                type="text"
+                placeholder="YYYYMMDD"
+                value={formData.birthDate}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+          <div className={style.modalFooter}>
+            <button
+              type="submit"
+              className={style.actionButton}
+              disabled={isLoading}
+            >
+              {isLoading ? "처리중..." : "가입하기"}
+            </button>
+            {error && <div className={style.error}>{error}</div>}
+          </div>
+        </form>
       </div>
-    </>)
+    </div>
+  );
 }

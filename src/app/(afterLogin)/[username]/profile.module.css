@@ -1,83 +1,156 @@
 .main {
-    width: 600px;
-    border-color: rgb(239, 243, 244);
-    border-right-width: 1px;
-    border-left-width: 1px;
-    border-left-style: solid;
-    border-right-style: solid;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
+  width: 600px;
+  border-color: rgb(239, 243, 244);
+  border-right-width: 1px;
+  border-left-width: 1px;
+  border-left-style: solid;
+  border-right-style: solid;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background-color: white;
+  color: black;
 }
 
 .header {
-    display: flex;
-    height: 53px;
-    align-items: center;
+  display: flex;
+  height: 53px;
+  align-items: center;
+  padding: 0 16px;
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgb(47, 51, 54);
 }
 
 .headerTitle {
-    font-size: 20px;
-    font-weight: bold;
-    margin-left: 30px;
+  font-size: 20px;
+  font-weight: bold;
+  margin-left: 50px;
+  display: flex;
+  flex-direction: column;
 }
 
-.userZone {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid rgb(239, 243, 244);
-    padding: 12px 16px;
+.headerTitle span:last-child {
+  font-size: 13px;
+  color: rgb(113, 118, 123);
+}
+
+.profileContainer {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgb(47, 51, 54);
+}
+
+.profileHeader {
+  position: relative;
+  margin-bottom: 16px;
 }
 
 .userImage {
-    display: flex;
-    align-items: center;
-    margin-right: 12px;
-    border-radius: 50%;
+  width: 134px;
+  height: 134px;
+  border-radius: 50%;
+  background-color: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: #fff;
+  margin-bottom: 16px;
 }
-.userImage img {
-    width: 134px;
-    border-radius: 50%;
+
+.editButton {
+  position: absolute;
+  right: 0;
+  top: 0;
+  border: 1px solid rgb(207, 217, 222);
+  padding: 0 16px;
+  border-radius: 20px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: bold;
+  background-color: transparent;
+  color: bla;
+  cursor: pointer;
 }
+
+.editButton:hover {
+  background-color: rgba(239, 243, 244, 0.1);
+}
+
+.userInfo {
+  margin-bottom: 16px;
+}
+
 .userName {
-    margin: 0 12px;
-    flex: 1;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 2px;
 }
-.userName > div:first-child {
-    font-weight: bold;
-    font-size: 20px;
+
+.userHandle {
+  font-size: 15px;
+  color: rgb(113, 118, 123);
 }
-.userName > div:last-child {
-    font-size: 15px;
+
+.joinDate {
+  font-size: 15px;
+  color: rgb(113, 118, 123);
+  margin-top: 12px;
 }
-.followButton {
-    border: 1px solid rgb(207, 217, 222);
-    padding: 0 16px;
-    border-radius: 17px;
-    height: 34px;
-    background-color: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 15px;
-    color: white;
-    cursor: pointer;
+
+.followInfo {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+  color: rgb(113, 118, 123);
 }
-.followButton:hover {
-    background-color: rgb(39,44,48);
+
+.followCount {
+  color: #444;
+  font-weight: bold;
 }
 
 .backButton {
-    width: 34px;
-    height: 34px;
-    background-color: #fff;
-    border: none;
-    border-radius: 17px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
+  width: 34px;
+  height: 34px;
+  background-color: transparent;
+  border: none;
+  border-radius: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
+
 .backButton:hover {
-    background-color: rgba(15, 20, 25, 0.1);
+  background-color: rgba(239, 243, 244, 0.1);
+}
+
+.verifiedBadge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  color: rgb(29, 155, 240);
+}
+
+.editPasswordButton {
+  position: absolute;
+  right: 0;
+  top: 60;
+  border: 1px solid rgb(207, 217, 222);
+  padding: 0 16px;
+  border-radius: 20px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: bold;
+  background-color: transparent;
+  color: bla;
+  cursor: pointer;
 }
