@@ -1,12 +1,8 @@
+"use client";
+
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import styles from "./changePasswordModal.module.css";
-
-interface ChangePasswordModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  displayName: string;
-}
 
 interface PasswordData {
   currentPassword: string;
@@ -14,23 +10,20 @@ interface PasswordData {
   confirmPassword: string;
 }
 
-export default function ChangePasswordModal({
-  isOpen,
-  onClose,
-  displayName,
-}: ChangePasswordModalProps) {
+export default function ChangePasswordModal() {
   const [passwordData, setPasswordData] = useState<PasswordData>({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
   const [error, setError] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
 
   const changePasswordMutation = useMutation({
     mutationFn: async (data: PasswordData) => {
       const token = sessionStorage.getItem("token");
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/${displayName}/password`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/users/password`,
         {
           method: "PUT",
           headers: {
@@ -48,7 +41,7 @@ export default function ChangePasswordModal({
       return response.json();
     },
     onSuccess: () => {
-      onClose();
+      setIsOpen(false);
       // 성공 메시지 표시 로직 추가 가능
     },
     onError: (error) => {
@@ -83,11 +76,13 @@ export default function ChangePasswordModal({
       <div className={styles.modal}>
         <div className={styles.header}>
           <h2 className={styles.title}>Change Password</h2>
-          <button onClick={onClose} className={styles.closeButton}>
+          <button
+            onClick={() => setIsOpen(false)}
+            className={styles.closeButton}
+          >
             ✕
           </button>
         </div>
-
         <form onSubmit={handleSubmit}>
           <div className={styles.inputGroup}>
             <label className={styles.label}>Current Password</label>
@@ -128,11 +123,7 @@ export default function ChangePasswordModal({
           {error && <div className={styles.error}>{error}</div>}
 
           <div className={styles.buttonContainer}>
-            <button
-              type="button"
-              onClick={onClose}
-              className={styles.cancelButton}
-            >
+            <button type="button" className={styles.cancelButton}>
               Cancel
             </button>
             <button

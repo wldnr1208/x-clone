@@ -6,8 +6,6 @@ import ActionButtons from "@/app/(afterLogin)/_component/ActionButtons";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ko";
-import PostImages from "./PostImages";
-import PostArticle from "./PostArticle";
 import { useQuery } from "@tanstack/react-query";
 
 dayjs.locale("ko");
@@ -73,7 +71,7 @@ export default function Post() {
   return (
     <>
       {postsData.posts.map((post) => (
-        <PostArticle key={post.postId} post={post}>
+        <article className={style.post}>
           <div className={style.postWrapper}>
             <div className={style.postUserSection}>
               <Link
@@ -107,7 +105,7 @@ export default function Post() {
               <ActionButtons />
             </div>
           </div>
-        </PostArticle>
+        </article>
       ))}
     </>
   );

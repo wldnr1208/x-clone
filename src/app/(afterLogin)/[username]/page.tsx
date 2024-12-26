@@ -99,11 +99,7 @@ export default function Profile({
               Edit password
             </button>
           </div>
-          <ChangePasswordModal
-            isOpen={isPasswordModalOpen}
-            onClose={() => setIsPasswordModalOpen(false)}
-            displayName={user.displayName}
-          />
+          <ChangePasswordModal />
         </div>
 
         <div className={style.userInfo}>
